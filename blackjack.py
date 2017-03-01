@@ -1,6 +1,18 @@
 import random
 
 
+def get_user_response(input_request):
+    while True:
+        player_move = raw_input("{}: ".format(input_request)).lower()
+
+        if player_move[0] == "y":
+            return True
+        elif player_move[0] == "n":
+            return False
+        else:
+            print "Please enter a valid input."
+
+
 class Table(object):
     """
     Black jack table for managing players and starting the game.
@@ -41,7 +53,7 @@ class Table(object):
             print "No players have joined the table."
             return
 
-        print "A game of black jack has commenced!"
+        print "\nA game of black jack has commenced!"
 
         while True:
             self.dealer.start_round()
@@ -52,6 +64,10 @@ class Table(object):
             print ""
             self.get_player_stats()
             print ""
+
+            if not get_user_response("Would you like to play again? [y/n]"):
+                print "Thanks for playing!"
+                break
 
 
 class Player(object):
@@ -268,15 +284,7 @@ class Dealer(Player):
         print "{}, your total is: {}".format(player.name,
                                              player.get_cards_value())
 
-        while True:
-            player_move = raw_input("Would you like to hit? [y/n]: ").lower()
-
-            if player_move[0] == "y":
-                return True
-            elif player_move[0] == "n":
-                return False
-            else:
-                print "Please enter a valid input."
+        return get_user_response("Would you like to hit? [y/n]")
 
 
 class Deck(object):
@@ -330,19 +338,10 @@ def main():
         player_name = raw_input("Add a player to the table by name: ")
         Player(player_name).join_table(black_jack_table)
 
-        add_player = False
-        while True:
-            more_players = raw_input("Add another player? [y/n]: ")
-            if more_players[0].lower() == "y":
-                add_player = True
-                break
-            elif more_players[0].lower() == "n":
-                break
+        if not get_user_response("Add another player? [y/n]"):
+            break
 
         print ""
-
-        if not add_player:
-            break
 
     black_jack_table.start_game()
 
