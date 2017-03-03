@@ -1,9 +1,14 @@
+from __future__ import print_function
 import random
 
 BANK_DEFAULT_BUYIN = 100
 
 
 def get_user_response(input_request):
+    """
+    Prints the request and asks user for their y/n input.
+    Returns True if user inputs 'y' and False if user inputs 'n'.
+    """
     while True:
         player_move = raw_input("{}: ".format(input_request)).lower()
 
@@ -12,7 +17,7 @@ def get_user_response(input_request):
         elif player_move[0] == "n":
             return False
         else:
-            print "Please enter a valid input."
+            print("Please enter a valid input.")
 
 
 class Table(object):
@@ -28,49 +33,49 @@ class Table(object):
         Adds a player to the set of players at the table.
         """
         self.players.add(player)
-        print "{} has joined the table!".format(player.name)
+        print("{} has joined the table!".format(player.name))
 
     def remove_player(self, player):
         """
         Removes a player from the set of players at the table.
         """
         self.players.remove(player)
-        print "{} has left the table!".format(player.name)
+        print("{} has left the table!".format(player.name))
 
     def get_player_stats(self):
         """
         Gets all players' total stats and money.
         """
-        print "Players' stats:"
+        print("Players' stats:")
         for player in self.players:
-            print "{} has cash:{}, wins:{}, busts:{}, losses:{}".format(
-                player.name, player.bank, player.wins, player.busts,
-                player.losses)
+            print("{} has cash:{}, wins:{}, busts:{}, losses:{}".format(
+                  player.name, player.bank, player.wins, player.busts,
+                  player.losses))
 
     def start_game(self):
         """
         Begins a game of black jack in a loop.
         """
         if not self.players:
-            print "No players have joined the table."
+            print("No players have joined the table.")
             return
 
-        print "\nA game of black jack has commenced!"
+        print("\nA game of black jack has commenced!")
 
         while True:
             if not self.dealer.start_round():
                 continue
 
-            print ""
+            print("")
             self.dealer.deal_hands()
-            print ""
+            print("")
             self.dealer.pay_winners()
-            print ""
+            print("")
             self.get_player_stats()
-            print ""
+            print("")
 
             if not get_user_response("Would you like to play again? [y/n]"):
-                print "Thanks for playing!"
+                print("Thanks for playing!")
                 break
 
 
@@ -95,7 +100,7 @@ class Player(object):
         Collects winnings and adds to the bank.
         """
         self.bank += amount
-        print "{} now has {}!".format(self.name, self.bank)
+        print("{} now has {}!".format(self.name, self.bank))
 
     def bet_money(self, amount):
         """
@@ -107,7 +112,7 @@ class Player(object):
 
         self.bet_amount = amount
         self.bank -= amount
-        print "{} has bet {}!".format(self.name, self.bet_amount)
+        print("{} has bet {}!".format(self.name, self.bet_amount))
 
     def join_table(self, table):
         """
@@ -126,15 +131,15 @@ class Player(object):
         if self.table:
             self.table.remove_player(self)
         else:
-            print "Not currently playing at any tables."
+            print("Not currently playing at any tables.")
 
     def get_hand(self, card):
         """
         Obtain and append the hand that the dealer serves.
         """
         self.cards.append(card)
-        print "{} has received the hand {}".format(self.name, card)
-        print "{}'s total is {}".format(self.name, self.get_cards_value())
+        print("{} has received the hand {}".format(self.name, card))
+        print("{}'s total is {}".format(self.name, self.get_cards_value()))
 
     def reset(self):
         """
@@ -162,7 +167,7 @@ class Player(object):
         Simulates buying chips by simply resetting the bank amount.
         """
         self.bank = BANK_DEFAULT_BUYIN
-        print "{} has bought {} more chips!".format(self.name, self.bank)
+        print("{} has bought {} more chips!".format(self.name, self.bank))
 
 
 class Dealer(Player):
@@ -181,19 +186,19 @@ class Dealer(Player):
         Returns true if no issues. False if a round could not be started.
         """
         if not self.reset_and_get_all_bets():
-            print "There are currently no active players. Skipping round."
+            print("There are currently no active players. Skipping round.")
             return False
 
         # Deal dealer hand first
         self.deal_card(self)
         self.deal_card(self)
-        print ""
+        print("")
 
         # Deal new cards
         for player in self.table.players:
             self.deal_card(player)
             self.deal_card(player)
-            print ""
+            print("")
 
         return True
 
@@ -213,7 +218,7 @@ class Dealer(Player):
 
             # Check if player still has any money left
             if player.bank <= 0:
-                print "Sorry, {}, you need money to play!".format(player.name)
+                print("Sorry, {}, you need money to play!".format(player.name))
 
                 if get_user_response("Would you like to buy more chips?"):
                     player.buy_chips()
@@ -222,13 +227,13 @@ class Dealer(Player):
                     # being asked again whether they'd like to buy more chips.
                     # In the future, the user should leave the table or become
                     # a spectator.
-                    print "Maybe you'll change your mind on the next round!"
+                    print("Maybe you'll change your mind on the next round!")
                     self.active = False
                     continue
 
             self.get_player_bet(player)
             active_players = True
-            print ""
+            print("")
 
         return active_players
 
@@ -243,7 +248,7 @@ class Dealer(Player):
                 bet_amount = int(raw_input(output))
                 player.bet_money(bet_amount)
             except ValueError:
-                print "Please enter a valid range."
+                print("Please enter a valid range.")
             else:
                 player.active = True
                 break
@@ -252,7 +257,7 @@ class Dealer(Player):
         """
         Deal hands to all players followed by the dealer.
         """
-        print "Dealing hands..."
+        print("Dealing hands...")
 
         for player in [p for p in self.table.players if p.active]:
             while True:
@@ -261,20 +266,20 @@ class Dealer(Player):
                     self.deal_card(player)
 
                     if self.check_is_busted(player):
-                        print "{} has busted!".format(player.name)
+                        print("{} has busted!".format(player.name))
                         player.busted = True
                         break
                 else:
-                    print "{} refuses to hit!".format(player.name)
+                    print("{} refuses to hit!".format(player.name))
                     break
 
-            print ""
+            print("")
 
         while self.get_cards_value() < 17:
             self.deal_card(self)
 
             if self.check_is_busted(self):
-                print "Dealer has busted!"
+                print("Dealer has busted!")
                 self.busted = True
                 break
 
@@ -282,7 +287,7 @@ class Dealer(Player):
         """
         Updates all player statuses and provide payout to winners.
         """
-        print "Here comes the payout!"
+        print("Here comes the payout!")
 
         for player in self.table.players:
             status = ""
@@ -298,14 +303,14 @@ class Dealer(Player):
                 status = "won"
                 player.collect_winnings(player.bet_amount * 2)
 
-            print "{} has {}".format(player.name, status)
+            print("{} has {}".format(player.name, status))
 
     def deal_card(self, player):
         """
         Obtains a card from the deck to deal to the player. If there
         are no more cards left in the deck, create a new shuffled deck.
         """
-        print "Dealing card..."
+        print("Dealing card...")
 
         # If card not initialized or runs out, create a new deck and shuffle it
         if not self.deck:
@@ -326,8 +331,8 @@ class Dealer(Player):
         Asks the user if they would like to hit or pass. Obtain the users
         response as a "y" or "no" and returns a True or False, respectively.
         """
-        print "{}, your total is: {}".format(player.name,
-                                             player.get_cards_value())
+        print("{}, your total is: {}".format(player.name,
+                                             player.get_cards_value()))
 
         return get_user_response("Would you like to hit? [y/n]")
 
@@ -386,7 +391,7 @@ def main():
         if not get_user_response("Add another player? [y/n]"):
             break
 
-        print ""
+        print("")
 
     black_jack_table.start_game()
 
