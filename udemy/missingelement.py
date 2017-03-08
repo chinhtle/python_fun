@@ -42,3 +42,16 @@ def finder2(l1, l2):
             count[num] -= 1
 
     return None
+
+
+def finder3(l1, l2):
+    """
+    Find the missing element in a non-python specific approach in constant
+    space complexity.
+    """
+    result = 0
+
+    for num in l1 + l2:
+        result ^= num
+
+    return result
