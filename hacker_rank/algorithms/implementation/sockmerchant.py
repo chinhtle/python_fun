@@ -24,7 +24,7 @@
 # Sample Output:
 #   3
 
-int(raw_input().strip())  # Not needed
+raw_input()  # Not needed
 socks = map(int, raw_input().split())
 
 total = 0
